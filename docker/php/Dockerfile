@@ -21,8 +21,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 RUN groupadd -g ${GID} appuser || true \
- && useradd -u ${UID} -g ${GID} -m appuser || true \
- && chown -R appuser:appuser /var/www/html
+    && useradd -u ${UID} -g ${GID} -m appuser || true \
+    && chown -R appuser:appuser /var/www/html  \
+    && chown -R www-data:www-data /var/www/html \
 
 COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/99-custom.ini
 
