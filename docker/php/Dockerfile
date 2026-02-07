@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 ARG UID=1000
 ARG GID=1000
@@ -18,12 +18,15 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/* /tmp/pear/cache
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
 
 RUN groupadd -g ${GID} appuser || true \
     && useradd -u ${UID} -g ${GID} -m appuser || true \
     && chown -R appuser:appuser /var/www/html  \
-    && chown -R www-data:www-data /var/www/html \
+    && chown -R www-data:www-data /var/www/html
+
+RUN git config --global --add safe.directory /var/www/html
 
 COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/99-custom.ini
 
