@@ -33,6 +33,8 @@ tasks:
         vars: { CLI_ARGS: 'migrate:fresh' }
       - task: artisan
         vars: { CLI_ARGS: 'db:seed' }
+      - task: artisan
+        vars: { CLI_ARGS: 'l5-swagger:generate'}
 
   up:
     silent: true

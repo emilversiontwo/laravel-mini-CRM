@@ -1,8 +1,10 @@
 <?php
 
+use App\Exceptions\AppLogicException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,5 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (AppLogicException $e, Request $_) {
+            return response()->json([
+                'errors' => [
+                    [
+                        'code' => $e->getCode(),
+                        'title' => $e->getMessage(),
+                    ],
+                ],
+            ], $e->getCode());
+        });
     })->create();
