@@ -94,6 +94,8 @@
                     }
                 } else if (xhr.status === 413) {
                     display_error('files_errors', 'Файл слишком большой')
+                } else if (xhr.status === 429) {
+                    display_error('message', 'Вы отправили слишком много заявок по пробуйте на следующий день');
                 } else {
                     display_error('message', 'Кажется что-то пошло не так');
                 }
