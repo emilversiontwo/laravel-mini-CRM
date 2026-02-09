@@ -30,9 +30,11 @@ class TicketService
 
         $ticket->customer()->associate($dto->customer);
 
-        /** @var UploadedFile $file */
-        foreach ($dto->files as $file) {
-            $ticket->addMedia($file)->setFileName(Hash::make(Carbon::now()->toDateTimeString()) . '.' . $file->getClientOriginalExtension())->toMediaCollection();
+        if ($dto->files){
+            /** @var UploadedFile $file */
+            foreach ($dto->files as $file) {
+                $ticket->addMedia($file)->setFileName(Hash::make(Carbon::now()->toDateTimeString()) . '.' . $file->getClientOriginalExtension())->toMediaCollection();
+            }
         }
 
         $ticket->save();
