@@ -6,11 +6,14 @@ use App\Exceptions\AppLogicException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\IndexTicketRequest;
 use App\Http\Requests\Ticket\StoreTicketRequest;
+use App\Http\Requests\Ticket\UpdateTicketRequest;
 use App\Http\Resources\Ticket\TicketResource;
+use App\Models\Ticket;
 use App\Services\Customer\Dto\FindOrStoreCustomerDto;
 use App\Services\Customer\Http\CustomerService;
 use App\Services\Ticket\Dto\IndexTicketDto;
 use App\Services\Ticket\Dto\StoreTicketDto;
+use App\Services\Ticket\Dto\UpdateTicketDto;
 use App\Services\Ticket\Http\TicketService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -142,5 +145,48 @@ class TicketController extends Controller
         $ticket = $this->ticketService->store($dto);
 
         return new TicketResource($ticket)->response()->setStatusCode(ResponseCode::HTTP_CREATED);
+    }
+
+    /**
+     * @param Ticket $ticket
+     * @param UpdateTicketRequest $request
+     * @return JsonResponse
+     */
+    #[OA\Put(
+        path: "/api/tickets/{ticketId}",
+        description: "Update the Ticket status and returns the Ticket object",
+        summary: "Update the Ticket",
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(ref: UpdateTicketRequest::class),
+            )
+        ),
+        tags: ["Tickets"],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Ticket updated successfully",
+                content: new OA\JsonContent(ref: TicketResource::class),
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validation error"
+            )
+        ]
+    )]
+    public function update(Ticket $ticket, UpdateTicketRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $dto = new UpdateTicketDto([
+            ...$data,
+            'ticket' => $ticket
+        ]);
+
+        $ticket = $this->ticketService->update($dto);
+
+        return new TicketResource($ticket)->response()->setStatusCode(ResponseCode::HTTP_OK);
     }
 }

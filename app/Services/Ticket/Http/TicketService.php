@@ -6,6 +6,7 @@ use App\Enums\Ticket\TicketStatusEnum;
 use App\Models\Ticket;
 use App\Services\Ticket\Dto\IndexTicketDto;
 use App\Services\Ticket\Dto\StoreTicketDto;
+use App\Services\Ticket\Dto\UpdateTicketDto;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -42,6 +43,10 @@ class TicketService
         return $ticket;
     }
 
+    /**
+     * @param IndexTicketDto $dto
+     * @return LengthAwarePaginator
+     */
     public function index(IndexTicketDto $dto): LengthAwarePaginator
     {
         $tickets = Ticket::query();
@@ -85,5 +90,24 @@ class TicketService
         });
 
         return $tickets->paginate();
+    }
+
+    /**
+     * @param UpdateTicketDto $dto
+     * @return Ticket
+     */
+    public function update(UpdateTicketDto $dto): Ticket
+    {
+        $ticket = $dto->ticket->refresh();
+
+        $ticket->status = $dto->status->getValue();
+
+        if($dto->status == TicketStatusEnum::PROCESSED){
+            $ticket->manager_responded = now();
+        }
+
+        $ticket->save();
+
+        return $ticket;
     }
 }
