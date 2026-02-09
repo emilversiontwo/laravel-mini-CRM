@@ -8,17 +8,27 @@
     <title>Login</title>
 </head>
 <body>
-    <form action="{{ route('authenticate') }}" method="post" enctype="multipart/form-data">
-        @csrf
-        <p>
-            <input type="text" name="email" placeholder="Email">
-        </p>
-        <p>
-            <input type="password" name="password" placeholder="Пароль">
-        </p>
-        <p>
-            <input type="submit" value="Войти">
-        </p>
-    </form>
+<form action="{{ route('authenticate') }}" method="post" enctype="multipart/form-data">
+    @csrf
+    <div>
+        <input type="text" name="email" placeholder="Email">
+        <div>
+            @error('email')
+            <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div>
+        <input type="password" name="password" placeholder="Пароль">
+        <div>
+            @error('email')
+            <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div>
+        <input type="submit" value="Войти">
+    </div>
+</form>
 </body>
 </html>
