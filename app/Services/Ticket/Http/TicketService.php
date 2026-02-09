@@ -3,6 +3,7 @@
 namespace App\Services\Ticket\Http;
 
 use App\Enums\Ticket\TicketStatusEnum;
+use App\Exceptions\AppLogicException;
 use App\Models\Ticket;
 use App\Services\Ticket\Dto\IndexTicketDto;
 use App\Services\Ticket\Dto\StoreTicketDto;
@@ -14,15 +15,26 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
+use Symfony\Component\HttpFoundation\Response;
 
 class TicketService
 {
     /**
      * @throws FileIsTooBig
      * @throws FileDoesNotExist
+     * @throws AppLogicException
      */
     public function store(StoreTicketDto $dto): Ticket
     {
+        if (
+            Ticket::query()
+                ->where('created_at', '>=', now()->subHour(12)->toDateTimeString())
+                ->where('created_at', '<=', now()->addHour(12)->toDateTimeString())
+                ->exists()
+        ) {
+            throw new AppLogicException('cooldown you cant create ticket', Response::HTTP_TOO_MANY_REQUESTS);
+        }
+
         $ticket = new Ticket();
 
         $ticket->subject = $dto->subject;
@@ -31,7 +43,7 @@ class TicketService
 
         $ticket->customer()->associate($dto->customer);
 
-        if ($dto->files){
+        if ($dto->files) {
             /** @var UploadedFile $file */
             foreach ($dto->files as $file) {
                 $ticket->addMedia($file)->setFileName(Hash::make(Carbon::now()->toDateTimeString()) . '.' . $file->getClientOriginalExtension())->toMediaCollection();
@@ -102,7 +114,7 @@ class TicketService
 
         $ticket->status = $dto->status->getValue();
 
-        if($dto->status == TicketStatusEnum::PROCESSED){
+        if ($dto->status == TicketStatusEnum::PROCESSED) {
             $ticket->manager_responded = now();
         }
 
