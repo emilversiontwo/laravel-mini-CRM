@@ -46,3 +46,9 @@ tasks:
     silent: true
     cmds:
       - docker compose --file {{.DOCKER_COMPOSE}} down
+
+  docgen:
+    silent: true
+    cmds:
+      - task: artisan
+        vars: { CLI_ARGS: 'l5-swagger:generate' }
