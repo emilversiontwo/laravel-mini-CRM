@@ -28,6 +28,7 @@ class TicketService
     {
         if (
             Ticket::query()
+                ->where('customer_id', '=', $dto->customer->id)
                 ->where('created_at', '>=', now()->subHour(12)->toDateTimeString())
                 ->where('created_at', '<=', now()->addHour(12)->toDateTimeString())
                 ->exists()
