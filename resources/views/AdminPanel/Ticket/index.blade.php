@@ -193,7 +193,7 @@
 
                 const tdFiles = document.createElement('td');
                 if (Array.isArray(t.files) && t.files.length) {
-                    const ul = document.createElement('ul');
+                    const ul = document.createElement('ol');
                     ul.className = 'files-list';
                     for (const f of t.files) {
                         const li = document.createElement('li');
@@ -222,7 +222,13 @@
                     td.colSpan = 7;
                     const wrapper = document.createElement('div');
                     wrapper.className = 'details';
-                    wrapper.innerHTML = '<a href="{{ route('welcome') }}/admin/tickets/' + t.id + '">Открыть</a>';
+                    var fileLinks = '';
+                    var iterator = 1;
+                    t.files.forEach(value => {
+                        fileLinks = fileLinks + '<a href="' + value + '">Открыть файл '+ iterator + '</a><br>';
+                        iterator = iterator + 1;
+                    });
+                    wrapper.innerHTML = '<a href="{{ route('welcome') }}/admin/tickets/' + t.id + '">Изменить статус</a><br>' + fileLinks;
                     td.appendChild(wrapper);
                     detail.appendChild(td);
                     tr.parentNode.insertBefore(detail, tr.nextSibling);
@@ -270,7 +276,7 @@
 
             try {
                 const headers = {'accept': 'application/json'};
-                const csrf = "";
+                const csrf = "{{ csrf_token() }}";
                 if (csrf) headers['X-CSRF-TOKEN'] = csrf;
 
                 const authVal = "{{ $token }}";
