@@ -5,6 +5,7 @@ namespace Tests\Feature\app\Http\Controllers\Api\Ticket;
 use App\Enums\Ticket\TicketStatusEnum;
 use App\Models\Ticket;
 use App\Models\User;
+use Carbon\Carbon;
 use Database\Seeders\CustomerSeeder;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\RoleSeeder;
@@ -46,10 +47,12 @@ class TicketControllerTest extends TestCase
     #[Test]
     public function test_store_ticket(): void
     {
+        Carbon::setTestNow(Carbon::now());
+
         $requestData = [
             'name' => 'John Doe',
-            'phone' => '+7 978 501 74 69',
-            'email' => 'johndoe@google.com',
+            'phone' => '+7 912 345 67 89',
+            'email' => 'johndoedoetest@google.com',
             'subject' => 'some subject',
             'text' => 'some text about the ticket',
             'files' => [
@@ -58,6 +61,8 @@ class TicketControllerTest extends TestCase
                 uploadedFile::fake()->image('photo3.jpg'),
             ],
         ];
+
+        Carbon::setTestNow(Carbon::now()->addDay(2));
 
         $response = $this->postJson(route('tickets.store'), $requestData);
 

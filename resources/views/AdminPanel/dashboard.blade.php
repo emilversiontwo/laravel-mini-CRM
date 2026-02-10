@@ -14,7 +14,7 @@
         <nav>
             <a href="{{ route('admin.tickets.index') }}">Рассмотрение заявок</a>
             <br>
-            <a href="{{ route('admin.users.index') }}">Управление пользывателями</a>
+            <a href="{{ route('admin.users.index') }}">Управление пользователями</a>
         </nav>
 
         <small>Быстрые ссылки управления</small>
